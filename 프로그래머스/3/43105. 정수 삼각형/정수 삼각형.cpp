@@ -1,38 +1,20 @@
 #include <string>
+#include <algorithm>
 #include <vector>
 
 using namespace std;
 
 int solution(vector<vector<int>> triangle) {
-    int answer = 0;
-    int size = triangle.size();
-    vector<vector<int>> dp(500, vector<int>(500));
+    int height = triangle.size();
 
-    dp[0][0] = triangle[0][0];
-
-    for (int i = 1; i < size; i++)
-    {
-        for (int k = 0; k < triangle[i].size(); k++)
-        {
-            if (k == 0)
-            {
-                dp[i][k] = dp[i - 1][k] + triangle[i][k];
-            }
-            else if (k == triangle[i].size() - 1)
-            {
-                dp[i][k] = dp[i - 1][k - 1] + triangle[i][k];
-            }
-            else
-            {
-                dp[i][k] = max(dp[i - 1][k - 1], dp[i - 1][k]) + triangle[i][k];
-            }
+    // 아래에서부터 위로 거꾸로 누적
+    for (int i = height - 2; i >= 0; i--) {
+        for (int j = 0; j < triangle[i].size(); j++) {
+            // 아래 두 칸 중 더 큰 값을 현재 값에 더함
+            triangle[i][j] += max(triangle[i+1][j], triangle[i+1][j+1]);
         }
     }
 
-    for (int i = 0; i < dp[size].size(); i++)
-    {
-        answer = max(answer, dp[size - 1][i]);
-    }
-
-    return answer;
+    // 꼭대기 값이 이제 최대 합
+    return triangle[0][0];
 }
