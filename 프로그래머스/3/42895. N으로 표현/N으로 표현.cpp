@@ -8,41 +8,41 @@ using namespace std;
 int solution(int N, int number) {
     int answer = -1;
     
-    unordered_set<int> s[8];
-
-    int sum = 0;
-    for (int i = 0; i < 8; i++)
+    if (N == number)
     {
-        sum = sum * 10 + N;
-        s[i].insert(sum);
+        return 1;
     }
+    
+    vector<unordered_set<int>> dp(9);
 
-    for (int i = 1; i < 8; i++)
+    for (int i = 0; i <= 8; i++)
     {
+        int repeated = 0;
         for (int k = 0; k < i; k++)
         {
-            for (int a : s[k])
+            repeated = repeated * 10 + N;
+        }
+        dp[i].insert(repeated);
+        
+        for (int k = 1; k < i; k++)
+        {
+            for (int a : dp[k])
             {
-                for (int b : s[i - k - 1])
+                for (int b : dp[i - k])
                 {
-                    s[i].insert(a + b);
-                    s[i].insert(a - b);
-                    s[i].insert(a * b);
-                    if(b != 0)
-                        s[i].insert(a/b);
+                    dp[i].insert(a - b);
+                    dp[i].insert(a + b);
+                    dp[i].insert(a * b);
+                    if (b != 0) dp[i].insert(a / b);
                 }
             }
         }
-    }
-
-    for (int i = 0; i < 8; i++) 
-    {
-        if (s[i].find(number) != s[i].end()) 
+        
+        if (dp[i].count(number))
         {
-            answer = i + 1;
-            break;
+            return i;
         }
     }
-
+    
     return answer;
 }
