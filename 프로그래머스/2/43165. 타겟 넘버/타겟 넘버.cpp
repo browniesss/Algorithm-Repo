@@ -1,39 +1,31 @@
 #include <string>
+#include <iostream>
 #include <vector>
 
 using namespace std;
 
-int result = 0;
+int cnt = 0;
+vector<int> map;
 
-void DFS(vector<int> numbers, int sum, int target, int depth, int len)
+void DFS(int index, int curSum, int target)
 {
-    if (sum == target && depth == len)
+    if (index == map.size())
     {
-        result++;
+        if (curSum == target)
+        {
+            cnt++;
+        }
 
         return;
     }
-    else if (depth == len)
-    {
-        return;
-    }
 
-    for (int i = 0; i < 2; i++)
-    {
-        int sign = i % 2 == 0 ? 1 : -1;
-        int val = numbers[depth] * sign;
-
-        DFS(numbers, sum + val, target, depth + 1, len);
-    }
-    
-    return;
+    DFS(index + 1, curSum + map[index], target);
+    DFS(index + 1, curSum - map[index], target);
 }
 
 int solution(vector<int> numbers, int target) {
-    int answer = 0;
+    map = numbers;
+    DFS(0, 0, target);
 
-    DFS(numbers, 0, target, 0, numbers.size());
-    answer = result;
-
-    return answer;
+    return cnt;
 }
