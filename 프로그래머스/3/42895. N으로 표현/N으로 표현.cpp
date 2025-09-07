@@ -4,43 +4,45 @@
 
 using namespace std;
 
-
-int solution(int N, int number) {
+int solution(int N, int number)
+{
     int answer = -1;
     
-    if (N == number)
+    unordered_set<int> s[8];
+    
+    int sum = 0;
+    for (int i = 0; i < 8; i ++)
     {
-        return 1;
+        sum = sum * 10 + N;
+        s[i].insert(sum);
     }
     
-    vector<unordered_set<int>> dp(9);
-
-    for (int i = 0; i <= 8; i++)
+    for (int i = 1; i < 8; i++)
     {
-        int repeated = 0;
         for (int k = 0; k < i; k++)
         {
-            repeated = repeated * 10 + N;
-        }
-        dp[i].insert(repeated);
-        
-        for (int k = 1; k < i; k++)
-        {
-            for (int a : dp[k])
+            for (int a : s[k])
             {
-                for (int b : dp[i - k])
+                for (int b : s[i - k - 1])
                 {
-                    dp[i].insert(a - b);
-                    dp[i].insert(a + b);
-                    dp[i].insert(a * b);
-                    if (b != 0) dp[i].insert(a / b);
+                    s[i].insert(a + b);
+                    s[i].insert(a - b);
+                    s[i].insert(a * b);
+                    if (b != 0)
+                    {
+                        s[i].insert(a/ b);
+                    }
                 }
             }
         }
-        
-        if (dp[i].count(number))
+    }
+    
+    for (int i = 0; i < 8; i++)
+    {
+        if (s[i].find(number) != s[i].end())
         {
-            return i;
+            answer = i + 1;
+            break;
         }
     }
     
