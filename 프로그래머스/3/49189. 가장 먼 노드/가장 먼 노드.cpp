@@ -1,43 +1,66 @@
-#include <iostream>
+#include <string>
 #include <vector>
-#include <queue>
-#include <algorithm>
 
 using namespace std;
 
-int solution(int n, vector<vector<int>> vertex) {
-    vector<vector<int>> graph(n + 1);
-    vector<int> distance(n + 1, 0);
-    queue<int> q;
+vector<int> ans;
+vector<bool> visit;
+vector<vector<int>> map;
 
-    // 인접 리스트 구성
-    for (const auto& edge : vertex) {
-        int a = edge[0], b = edge[1];
-        graph[a].push_back(b);
-        graph[b].push_back(a);
+void DFS(int start, int count)
+{
+    ans[start] = min(ans[start], count);
+
+    for (int i = 0; i < map[start].size(); i++)
+    {
+        int val = map[start][i];
+        
+        if (visit[val] || ans[val] <= count + 1)
+            continue;
+
+        visit[val] = true;
+        DFS(val, count + 1);
+        visit[val] = false;
+    }
+}
+
+int solution(int n, vector<vector<int>> edge) {
+    int answer = 0;
+    int maxVal = -1;
+
+    ans.resize(n + 1, 99999);
+    visit.resize(n + 1);
+    map.resize(n + 1);
+
+    for (int i = 0; i < edge.size(); i++)
+    {
+        int start = edge[i][0];
+        int end = edge[i][1];
+
+        map[start].push_back(end);
+        map[end].push_back(start);
     }
 
-    // BFS 시작
-    q.push(1);
-    distance[1] = 1; // 방문 표시 (0은 미방문)
+    for (int i = 0; i < map[1].size(); i++)
+    {
+        visit[1] = true;
+        DFS(map[1][i], 1);
+        visit[1] = false;
+    }
 
-    while (!q.empty()) {
-        int current = q.front(); q.pop();
+    for (int i = 0; i < ans.size(); i++)
+    {
+        if (ans[i] != 99999)
+            maxVal = max(maxVal, ans[i]);
+    }
 
-        for (int next : graph[current]) {
-            if (distance[next] == 0) {
-                distance[next] = distance[current] + 1;
-                q.push(next);
-            }
+    for (int i = 0; i < ans.size(); i++)
+    {
+        if (maxVal == ans[i])
+        {
+            answer++;
         }
     }
 
-    // 최대 거리 계산
-    int maxDist = *max_element(distance.begin(), distance.end());
-    int count = count_if(distance.begin(), distance.end(), [maxDist](int d) 
-    {
-        return d == maxDist;
-    });
-
-    return count;
+    return answer;
 }
